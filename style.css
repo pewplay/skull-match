@@ -1,0 +1,714 @@
+/*
+ * Skull Match - styles.
+ * Based on "Deathmatch" by Jorge Rubiano (js13kGames 2022), MIT License.
+ *
+ * The game is laid out at a fixed logical size and scaled to fit the window:
+ *   portrait  412 x 732 (HUD above the board)
+ *   landscape 780 x 412 (HUD beside the board, class .L on #root)
+ */
+:root {
+  --a: linear-gradient(to top, #000428, #004e92);
+  --b: #000;
+  --c: #000000d6;
+  --e: #4074b5;
+  --i: #fff;
+  --p-a: linear-gradient(to bottom, #f6e6b4 0%, #ed9017 100%);
+  --p-b: #08143a;
+  --s-c: #08457b;
+  --tu: #062d53;
+  --db: 58.857px; /* one board cell (412 / 7) */
+  --bw: 412px; /* board size */
+  --w: 412px;
+  --h: 732px;
+  --emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    "Segoe UI Symbol", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000428;
+  background-image: var(--a);
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--i);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+button {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Flex helpers (kept from the original) */
+.df {
+  display: flex;
+}
+.df.a {
+  align-items: center;
+}
+.df.c {
+  justify-content: center;
+}
+.df.s {
+  justify-content: space-around;
+}
+.df.f {
+  flex-direction: column;
+}
+.wi {
+  width: 100%;
+}
+.he {
+  height: 100%;
+}
+.pr {
+  position: relative;
+}
+.pa {
+  position: absolute;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+}
+
+#root {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  transform-origin: 0 0;
+  visibility: hidden; /* shown once scaled */
+}
+
+#root.ready {
+  visibility: visible;
+}
+
+#render {
+  width: var(--w);
+  height: var(--h);
+}
+
+/* The page background (body) shows through, so letterbox bands blend in */
+.ba {
+  background: transparent;
+}
+
+.gm {
+  align-items: center;
+}
+
+/* Countdown overlay shown before the match starts */
+#ov {
+  background: var(--c);
+  font-size: 8em;
+  font-weight: bold;
+  z-index: 3;
+  left: 0;
+  top: 0;
+}
+
+/* ---------- Board ---------- */
+bo {
+  display: block;
+  flex: none;
+  overflow: hidden;
+  cursor: pointer;
+  width: var(--bw);
+  height: var(--bw);
+  background: #005695;
+  touch-action: none;
+  background-image: linear-gradient(
+      45deg,
+      var(--s-c) 25%,
+      transparent 26%,
+      transparent 75%,
+      var(--s-c) 75%,
+      var(--s-c)
+    ),
+    linear-gradient(
+      45deg,
+      var(--s-c) 25%,
+      transparent 26%,
+      transparent 75%,
+      var(--s-c) 75%,
+      var(--s-c)
+    );
+  background-size: calc(var(--db) * 2) calc(var(--db) * 2);
+  background-position: 0 0, var(--db) var(--db);
+}
+
+bo.d {
+  pointer-events: none;
+}
+
+bo.o {
+  filter: brightness(0.6);
+}
+
+bo:active {
+  cursor: grabbing;
+}
+
+.it {
+  font-family: var(--emoji);
+  font-size: 2.7em;
+  line-height: 1;
+  height: var(--db);
+  width: var(--db);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.86, -0.02, 0.45, 1.35);
+  opacity: 1;
+}
+
+.it.h {
+  transform: scale(2.5);
+}
+
+.it.h::after {
+  content: "💥";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.it.v {
+  transform: none;
+  transition: none;
+}
+
+/* "EXTRA MOVE!" label */
+.extra {
+  pointer-events: none;
+  width: var(--db);
+  height: var(--db);
+  text-align: center;
+  font-weight: bold;
+  font-size: 17px;
+  transform: scale(0);
+  opacity: 0;
+  z-index: 2;
+  transition: all 0.3s ease-out;
+  text-shadow: 2px 2px 0 var(--e), 2px -2px 0 var(--e), -2px 2px 0 var(--e),
+    -2px -2px 0 var(--e), 2px 0px 0 var(--e), 0px 2px 0 var(--e),
+    -2px 0px 0 var(--e), 0px -2px 0 var(--e);
+}
+
+.extra.s {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.extra.h {
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* ---------- HUD ---------- */
+top {
+  display: block;
+  flex: none;
+  height: calc(var(--h) - var(--bw) - 20px);
+}
+
+.sc {
+  /* spare height (see game.js) is split around the score box */
+  top: calc((var(--h) - 732px) / 2 + 20px);
+}
+
+.L .sc {
+  top: calc((var(--h) - 412px) / 2 + 20px);
+}
+
+.scn {
+  width: 190px;
+  height: 65px;
+  background: var(--tu);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.scv {
+  width: 50%;
+  border-radius: 15px;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.scv:not(:last-child) {
+  margin-right: 10px;
+}
+
+.sci {
+  background: var(--tu);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.scin {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 3px solid var(--i);
+  font-size: 13px;
+  font-weight: bold;
+  opacity: 0.2;
+}
+
+.scin.ac {
+  background: #feae13;
+  opacity: 1;
+}
+
+.tu {
+  bottom: 0;
+  height: 110px;
+  background: linear-gradient(to top, #004e92, #000428);
+}
+
+.tu::before,
+.tu::after {
+  content: "🧟‍♂️";
+  font-family: var(--emoji);
+  position: absolute;
+  font-size: 96px;
+  line-height: 1;
+  top: -108px;
+  left: 3%;
+}
+
+.tu::after {
+  content: "🧟‍♀️";
+  right: 3%;
+  left: unset;
+}
+
+.tun {
+  margin: 15px 0 5px 0;
+}
+
+.tuna {
+  text-align: center;
+  width: 100px;
+  height: 43px;
+  border-radius: 10px;
+  border: 3px solid var(--i);
+  font-size: 14px;
+  font-weight: bold;
+  padding: 0 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 37px;
+}
+
+.tup {
+  padding: 10px;
+}
+
+.bp {
+  display: block;
+  height: 25px;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--p-b);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.bp::-moz-progress-bar {
+  background: var(--p-a);
+}
+
+.bp::-webkit-progress-value {
+  background: var(--p-a);
+}
+
+.bp::-webkit-progress-bar {
+  background: var(--p-b);
+}
+
+#tupl {
+  left: 0;
+  top: 13px;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px var(--b), 0 0 4px var(--b);
+}
+
+/* Moves left for each player */
+.tuni {
+  width: 25px;
+  height: 25px;
+  border: 2px solid var(--i);
+  border-radius: 50%;
+  margin: 5px;
+}
+
+/* Messages over the board ("Round 1", "Your Turn") */
+#msb {
+  padding: 10px;
+  background: var(--c);
+  font-size: 2em;
+  font-weight: bold;
+  z-index: 2;
+  bottom: 200px;
+  left: 0;
+  pointer-events: none;
+  display: none;
+  text-align: center;
+}
+
+#msb.sh {
+  display: block;
+}
+
+/* ---------- Buttons ---------- */
+.mB {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  padding: 14px 24px;
+  min-height: 48px;
+  border: none;
+  background: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466);
+  color: var(--i);
+  box-shadow: 0 4px 0 #8c0335;
+}
+
+.mB:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #8c0335;
+}
+
+.mB:focus-visible,
+.ib:focus-visible,
+.mb button:focus-visible {
+  outline: 3px solid #feae13;
+  outline-offset: 2px;
+}
+
+/* Back and sound buttons */
+.ib {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  width: 52px;
+  height: 52px;
+  font-family: var(--emoji);
+  font-size: 30px;
+  line-height: 1;
+  z-index: 4;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#back {
+  left: 10px;
+}
+
+#bso {
+  right: 10px;
+}
+
+/* ---------- Title / menus ---------- */
+.lg {
+  padding: 20px;
+}
+
+.lg h1 {
+  font-size: 50px;
+  line-height: 1.1;
+  font-weight: bold;
+  margin: 20px;
+  text-shadow: 0 -1px 4px var(--i), 0 -2px 10px #ff0, 0 -10px 20px #ff8000,
+    0 -18px 40px #f00;
+  text-align: center;
+}
+
+.lg h1 span {
+  display: block;
+}
+
+.lg .sk {
+  font-family: var(--emoji);
+  font-size: 64px;
+  text-shadow: none;
+  margin-bottom: 6px;
+}
+
+.mBs {
+  width: 62%;
+}
+
+.mBs .mB {
+  margin-bottom: 16px;
+  height: 56px;
+}
+
+.wnuse {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#nuse {
+  margin: 24px;
+  max-width: 60%;
+  font-size: 16px;
+  background: var(--tu);
+  box-shadow: 0 4px 0 #021529;
+  border: 2px solid #ffffff55;
+}
+
+#nuse::before {
+  content: "✏️ ";
+  font-family: var(--emoji);
+}
+
+.ab {
+  width: 85%;
+  margin: 10px;
+  text-align: center;
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.hint {
+  width: 80%;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.4;
+  opacity: 0.85;
+  margin-bottom: 18px;
+}
+
+/* ---------- End screen ---------- */
+.eg h2 {
+  font-size: 50px;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.eg h2.sm {
+  font-size: 34px;
+}
+
+.eg > span {
+  font-family: var(--emoji);
+  font-size: 5em;
+  margin: 25px;
+}
+
+.egp {
+  border-radius: 10px;
+  border: 3px solid var(--i);
+  margin-bottom: 50px;
+  padding: 10px;
+  width: 80%;
+}
+
+.egu {
+  text-align: center;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.egn {
+  font-size: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+/* ---------- Modal ---------- */
+modal {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+modal.hide {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+modal.show {
+  visibility: visible;
+}
+
+.ms,
+.mw {
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.ms {
+  background: var(--c);
+}
+
+.mw {
+  z-index: 1;
+}
+
+.mc {
+  border-radius: 8px;
+  overflow: hidden;
+  width: 310px;
+  flex: none;
+  transform: scale(var(--s, 1));
+  background: var(--i);
+}
+
+.txt {
+  color: #5b6680;
+  padding: 20px;
+  flex-direction: column;
+  text-align: center;
+  font-size: 18px;
+}
+
+.txt h2 {
+  font-size: 22px;
+}
+
+.txt input {
+  margin-top: 14px;
+  width: 100%;
+  font-size: 20px;
+  padding: 10px;
+  border: 2px solid #b6bece;
+  border-radius: 8px;
+  text-align: center;
+  color: #222;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.mb button {
+  width: 100%;
+  border: none;
+  height: 52px;
+  font-size: 17px;
+  background: #fc7169;
+  cursor: pointer;
+  color: var(--i);
+  font-weight: bold;
+}
+
+.mb button:nth-child(2) {
+  background: #b6bece;
+}
+
+/* ---------- Landscape layout ---------- */
+.L .gm {
+  flex-direction: row;
+}
+
+.L top {
+  width: calc(var(--w) - var(--bw));
+  height: var(--h);
+}
+
+.L #bso {
+  right: calc(var(--bw) + 10px);
+}
+
+.L #msb {
+  bottom: auto;
+  top: 150px;
+}
+
+.L .lg {
+  padding: 4px;
+}
+
+.L .lg h1 {
+  margin: 8px;
+  font-size: 44px;
+}
+
+.L .lg h1 span {
+  display: inline;
+}
+
+.L .lg .sk {
+  display: none;
+}
+
+.L .mBs {
+  width: 42%;
+}
+
+.L #nuse {
+  margin: 12px;
+  max-width: 34%;
+}
+
+.L .menu .lg {
+  margin-top: 40px;
+}
+
+.L .eg h2 {
+  font-size: 40px;
+}
+
+.L .eg h2.sm {
+  font-size: 30px;
+}
+
+.L .eg > span {
+  font-size: 3em;
+  margin: 6px;
+}
+
+.L .egp {
+  margin-bottom: 18px;
+  width: 50%;
+  padding: 4px;
+}
+
+.L .egu {
+  font-size: 40px;
+}
+
+.L .hint {
+  width: 60%;
+  margin-bottom: 12px;
+}

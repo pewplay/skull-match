@@ -1,0 +1,42 @@
+{
+  "$schema": "https://raw.githubusercontent.com/pewplay/pewplay/main/schema/game.schema.json",
+  "title": "Skull Match",
+  "description": "Swap skulls, pumpkins and vampires in a spooky match-3 duel against a bot or a friend. Free to play in your browser, no install needed.",
+  "about": "Skull Match turns the classic match-3 puzzle into a head-to-head duel. You and your opponent share the same 7x7 board of skulls, pumpkins, vampires, brains and demons, and take turns swapping pieces to clear lines. Every piece you destroy is a point, and after five rounds the higher score wins.\n\nThe fun is in the power-ups. A 2x2 square becomes dynamite, four in a row makes an axe that clears the whole row, four in a column launches a rocket, and an L or T shape builds a bomb that wipes out a 5x5 area. Creating a power-up earns you an extra move, and power-ups caught in a blast chain into each other, so one clever swap can swing the match. Face a bot on easy, medium or hard, or pass the device to a friend.\n\nOriginally created by Jorge Rubiano for js13kGames 2022 as Deathmatch.",
+  "howToPlay": "Swipe a piece onto a neighbouring cell to swap them; the swap only counts if it lines up three or more matching pieces. Each turn gives you two moves and about 20 seconds, and every power-up you create adds an extra move. Tap a power-up to set it off. After five rounds the player with the most cleared pieces wins.",
+  "controls": [
+    { "input": "Swipe / drag a piece", "action": "Swap it with the neighbouring piece" },
+    { "input": "Tap / click a power-up", "action": "Detonate dynamite, axe, rocket or bomb" },
+    { "input": "Back button", "action": "Leave the match" },
+    { "input": "Speaker button", "action": "Toggle sound" }
+  ],
+  "tips": [
+    "Look for L and T shapes first: the bomb they create clears a 5x5 area and gives you an extra move.",
+    "Save a power-up for later in your turn and set it off next to other power-ups to trigger a chain reaction.",
+    "Moving a power-up instead of tapping it detonates it at its new position, which can put more pieces in its range.",
+    "Watch the timer bar: if it runs out before you move, the rest of your turn is lost."
+  ],
+  "faq": [
+    {
+      "question": "Is Skull Match free to play?",
+      "answer": "Yes, Skull Match is completely free and runs in your browser with no download or sign-up."
+    },
+    {
+      "question": "Can I play Skull Match on my phone or tablet?",
+      "answer": "Yes, swipes and taps work on touch screens, and the layout adapts to both portrait and landscape."
+    },
+    {
+      "question": "Can I play against a friend?",
+      "answer": "Yes, choose Two Players and take turns on the same device; there is no online multiplayer."
+    }
+  ],
+  "category": "Puzzle",
+  "tags": ["match-3", "puzzle", "halloween", "two-player", "bot", "emoji"],
+  "author": "Jorge Rubiano",
+  "playMode": "Both",
+  "orientation": "any",
+  "cover": "cover.png",
+  "screenshots": ["screenshots/1.png", "screenshots/2.png", "screenshots/3.png"],
+  "added": "2026-09-28",
+  "draft": false
+}
